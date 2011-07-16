@@ -1,0 +1,48 @@
+Poke
+====
+
+A tiny HTTP to Stomp adapter which I use for putting GitHub post-receive
+notifications on to a Stomp destination.
+
+What you do with the notification once it's gone beyond Poke is up to you.
+
+Installing
+----------
+
+  # Clone the repository.
+  # Install the required gems using bundler.
+  # There is no step 3.
+
+
+Using Poke
+----------
+
+Pretty simple really. Run it like this:
+
+    ./bin/poked
+
+By default poked listen on port 8854 and pushes to a Stomp server on
+127.0.0.1:61613. See `./bin/poked --help` for options.
+
+
+Contributing
+------------
+
+  # Fork the project.
+  # Make your changes. Don't change the version and make sure it's all tested.
+  # Document your changes in the README and if necessary in the code.
+  # Push to a topic branch.
+  # Send a Pull request (by email if you don't use GitHub).
+
+
+Licence
+-------
+
+This work is released under the MIT licence, a copy of which is included in
+the file LICENCE.
+
+
+Authors
+-------
+
+Craig R Webster <http://barkingiguana.com/>

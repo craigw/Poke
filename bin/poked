@@ -1,0 +1,66 @@
+#! /usr/bin/env ruby
+
+require 'rubygems'
+require 'bundler'
+Bundler.require
+require 'optparse'
+
+options = {
+  :http => {
+    :address => '127.0.0.1',
+    :port => 8854
+  },
+  :stomp => {
+    :address => '127.0.0.1',
+    :port => 61613,
+    :destination => '/topic/pushes',
+    :username => '',
+    :password => ''
+  }
+}
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: #{File.basename($0)} [options]"
+
+  opts.on '--http-address [ADDRESS]',
+    'The IP address to listen for HTTP requests' do |address|
+    options[:http][:address] = address
+  end
+  opts.on '--http-port [PORT]',
+    'The port to listen for HTTP requests' do |port|
+    options[:http][:port] = port.to_i
+  end
+
+  opts.on '--stomp-address [ADDRESS]',
+    'The IP address of the Stomp server' do |address|
+    options[:stomp][:address] = address
+  end
+  opts.on '--stomp-port [PORT]',
+    'The port the Stomp server is listening on' do |port|
+    options[:stomp][:port] = port.to_i
+  end
+  opts.on '--stomp-destination [DESTINATION]',
+    'The destination to put notifications eg /queue/pushes or ' + \
+    '/topic/push.notification' do |name|
+    options[:stomp][:destination] = name
+  end
+  opts.on '--stomp-username [USERNAME]',
+    'The username used to authenticate with the Stomp server' do |username|
+    options[:stomp][:username] = username
+  end
+  opts.on '--stomp-password [PASSWORD]',
+    'The password used to authenticate with the Stomp server' do |password|
+    options[:stomp][:password] = password
+  end
+end.parse!
+
+broker = Stomp::Client.new(*options[:stomp].values_at(:username, :password, :address, :port))
+at_exit { broker.close }
+
+require 'sinatra'
+set :bind, options[:http][:address]
+set :port, options[:http][:port]
+
+post '/' do
+  broker.publish options[:stomp][:destination], JSON.generate({:params => params, :env => env})
+end
